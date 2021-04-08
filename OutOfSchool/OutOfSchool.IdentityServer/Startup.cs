@@ -83,7 +83,8 @@ namespace OutOfSchool.IdentityServer
             var emailConfig = config
                 .GetSection("EmailConfiguration")
                 .Get<EmailConfiguration>();
-            services.AddSingleton(emailConfig); 
+            services.AddSingleton(emailConfig);
+            services.AddScoped<IEmailSender, EmailSender>();
 
             services.AddControllersWithViews();
         }
