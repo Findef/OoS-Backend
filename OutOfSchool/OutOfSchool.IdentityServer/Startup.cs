@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OutOfSchool.EmailService;
 using OutOfSchool.Services;
 using OutOfSchool.Services.Models;
 
@@ -78,6 +79,11 @@ namespace OutOfSchool.IdentityServer
                 })
                 .AddAspNetIdentity<User>()
                 .AddProfileService<ProfileService>();
+
+            var emailConfig = config
+                .GetSection("EmailConfiguration")
+                .Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig); 
 
             services.AddControllersWithViews();
         }
