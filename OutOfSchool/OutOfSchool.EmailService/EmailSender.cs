@@ -19,16 +19,22 @@ namespace OutOfSchool.EmailService
         }
         public void SendEmail(Message message)
         {
-            var emailMessage = CreateEmailMessage(message);
+            if (_emailConfig.Flag)
+            {
+                var emailMessage = CreateEmailMessage(message);
 
-            Send(emailMessage);
+                Send(emailMessage);
+            }
         }
 
         public async Task SendEmailAsync(Message message)
         {
-            var emailMessage = CreateEmailMessage(message);
+            if (_emailConfig.Flag)
+            {
+                var emailMessage = CreateEmailMessage(message);
 
-            await SendAsync(emailMessage);
+                await SendAsync(emailMessage);
+            }
         }
 
         private MimeMessage CreateEmailMessage(Message message)
@@ -50,7 +56,7 @@ namespace OutOfSchool.EmailService
                 {
                     client.CheckCertificateRevocation = false;
                     
-                    client.Connect(_emailConfig.SmtpServer, _emailConfig.Port, SecureSocketOptions.SslOnConnect);
+                    client.Connect(_emailConfig.SmtpServer, _emailConfig.Port, SecureSocketOptions.StartTls);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     client.Authenticate(_emailConfig.UserName, _emailConfig.Password);
 
