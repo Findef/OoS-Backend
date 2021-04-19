@@ -44,6 +44,7 @@ namespace OutOfSchool.IdentityServer
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireUppercase = false;
                     options.Password.RequiredLength = 6;
+                    options.SignIn.RequireConfirmedEmail = true;
                 })
                 .AddEntityFrameworkStores<OutOfSchoolDbContext>()
                 .AddDefaultTokenProviders();

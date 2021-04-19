@@ -4,6 +4,7 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OutOfSchool.EmailService;
 using OutOfSchool.IdentityServer.ViewModels;
 using OutOfSchool.Services.Models;
 
@@ -103,7 +104,16 @@ namespace OutOfSchool.IdentityServer.Controllers
                 return BadRequest();
             }
 
-            ModelState.AddModelError(string.Empty, "Login or password is wrong");
+            bool emailConfirmed = await userManager.IsEmailConfirmedAsync(new User {UserName = model.Username});
+            if (!emailConfirmed)
+            {
+                ModelState.AddModelError(string.Empty, "Email is not confirmed");  
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Login or password is wrong");
+            }
+
             return View(new LoginViewModel
             {
                 ExternalProviders = await signInManager.GetExternalAuthenticationSchemesAsync(),
@@ -164,7 +174,6 @@ namespace OutOfSchool.IdentityServer.Controllers
                 if (roleAssignResult.Succeeded)
                 {
                     await signInManager.SignInAsync(user, false);
-
                     return Redirect(model.ReturnUrl);
                 }
 
@@ -193,6 +202,31 @@ namespace OutOfSchool.IdentityServer.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return View("Error");
+            }
+
+            var result = await userManager.ConfirmEmailAsync(user, token);
+            return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+        }
+
+        [HttpGet]
+        public IActionResult SuccessRegistration()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Error()
+        {
+            return View();
         }
 
         public Task<IActionResult> ExternalLogin(string provider, string returnUrl)
