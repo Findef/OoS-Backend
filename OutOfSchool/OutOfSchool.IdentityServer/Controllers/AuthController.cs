@@ -20,6 +20,7 @@ namespace OutOfSchool.IdentityServer.Controllers
         private readonly UserManager<User> userManager;
         private readonly IIdentityServerInteractionService interactionService;
         private readonly ILogger<AuthController> logger;
+        private readonly IEmailSender emailSender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthController"/> class.
@@ -28,16 +29,19 @@ namespace OutOfSchool.IdentityServer.Controllers
         /// <param name="signInManager"> ASP.Net Core Identity Sign in Manager.</param>
         /// <param name="interactionService"> Identity Server 4 interaction service.</param>
         /// <param name="logger"> ILogger class.</param>
+        /// <param name="emailSender"> IEmailSender class.</param>
         public AuthController(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IIdentityServerInteractionService interactionService,
-            ILogger<AuthController> logger)
+            ILogger<AuthController> logger,
+            IEmailSender emailSender)
         {
             this.logger = logger;
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.interactionService = interactionService;
+            this.emailSender = emailSender;
         }
 
         /// <summary>
@@ -173,8 +177,13 @@ namespace OutOfSchool.IdentityServer.Controllers
 
                 if (roleAssignResult.Succeeded)
                 {
-                    await signInManager.SignInAsync(user, false);
-                    return Redirect(model.ReturnUrl);
+                    //await signInManager.SignInAsync(user, false);
+                    //return Redirect(model.ReturnUrl);
+                    var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token, email = user.Email }, Request.Scheme);
+                    var message = new Message(new string[] { user.Email }, "Confirmation email link", confirmationLink);
+                    await emailSender.SendEmailAsync(message);
+                    return RedirectToAction(nameof(SuccessRegistration));
                 }
 
                 var deletionResult = await userManager.DeleteAsync(user);
