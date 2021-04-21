@@ -180,7 +180,7 @@ namespace OutOfSchool.IdentityServer.Controllers
                     //await signInManager.SignInAsync(user, false);
                     //return Redirect(model.ReturnUrl);
                     var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token, email = user.Email }, Request.Scheme);
+                    var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token, email = user.Email, model.ReturnUrl }, Request.Scheme);
                     var message = new Message(new string[] { user.Email }, "Confirmation email link", confirmationLink);
                     await emailSender.SendEmailAsync(message);
                     return RedirectToAction(nameof(SuccessRegistration));
@@ -214,7 +214,7 @@ namespace OutOfSchool.IdentityServer.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        public async Task<IActionResult> ConfirmEmail(string token, string email, string returnUrl)
         {
             var user = await userManager.FindByEmailAsync(email);
             if (user == null)
@@ -223,7 +223,16 @@ namespace OutOfSchool.IdentityServer.Controllers
             }
 
             var result = await userManager.ConfirmEmailAsync(user, token);
-            return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+            if (result.Succeeded)
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return View("Error");
+            }
+            
+           //return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
         }
 
         [HttpGet]
