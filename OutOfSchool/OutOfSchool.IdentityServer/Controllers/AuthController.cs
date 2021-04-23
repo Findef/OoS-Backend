@@ -178,12 +178,12 @@ namespace OutOfSchool.IdentityServer.Controllers
                 if (roleAssignResult.Succeeded)
                 {
                     //await signInManager.SignInAsync(user, false);
-                    //return Redirect(model.ReturnUrl);
                     var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token, email = user.Email, model.ReturnUrl }, Request.Scheme);
+                    var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token, email = user.Email, model.ReturnUrl}, Request.Scheme);
                     var message = new Message(new string[] { user.Email }, "Confirmation email link", confirmationLink);
                     await emailSender.SendEmailAsync(message);
-                    return RedirectToAction(nameof(SuccessRegistration));
+                    //return RedirectToAction(nameof(SuccessRegistration));
+                    return Redirect(model.ReturnUrl);
                 }
 
                 var deletionResult = await userManager.DeleteAsync(user);
@@ -231,8 +231,8 @@ namespace OutOfSchool.IdentityServer.Controllers
             {
                 return View("Error");
             }
-            
-           //return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+
+            //return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
         }
 
         [HttpGet]
