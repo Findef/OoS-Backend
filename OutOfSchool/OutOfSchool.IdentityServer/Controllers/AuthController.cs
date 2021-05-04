@@ -182,6 +182,7 @@ namespace OutOfSchool.IdentityServer.Controllers
                     var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token, email = user.Email, model.ReturnUrl}, Request.Scheme);
                     var message = new Message(new string[] { user.Email }, "Confirmation email link", confirmationLink);
                     await emailSender.SendEmailAsync(message);
+                    await signInManager.SignInAsync(user, false);
                     //return RedirectToAction(nameof(SuccessRegistration));
                     return Redirect(model.ReturnUrl);
                 }

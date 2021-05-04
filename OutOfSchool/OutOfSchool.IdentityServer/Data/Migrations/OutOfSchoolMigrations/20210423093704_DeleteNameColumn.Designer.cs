@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OutOfSchool.Services;
 
 namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
 {
     [DbContext(typeof(OutOfSchoolDbContext))]
-    partial class OutOfSchoolDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210423093704_DeleteNameColumn")]
+    partial class DeleteNameColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,8 +316,15 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .HasColumnType("bigint")
                         .UseIdentityColumn();
 
-                    b.Property<long>("ActualAddressId")
+                    b.Property<long>("AddressId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("AttachedDocuments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AuthorityHolder")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -329,11 +338,14 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                     b.Property<DateTime>("DirectorBirthDay")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EdrpouIpn")
-                        .IsRequired()
+                    b.Property<string>("DirectorPhone")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("DirectorPosition")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("EDRPOU")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -341,35 +353,49 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Founder")
+                    b.Property<string>("Form")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("INPP")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullTitle")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
+                    b.Property<string>("Index")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Instagram")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<long>("LegalAddressId")
-                        .HasColumnType("bigint");
+                    b.Property<bool>("IsSubmitPZ1")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("KOATUU")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MFO")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ManagerialBody")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Ownership")
                         .HasColumnType("int");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Profile")
+                        .HasColumnType("int");
 
                     b.Property<string>("ShortTitle")
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -384,9 +410,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActualAddressId");
-
-                    b.HasIndex("LegalAddressId");
+                    b.HasIndex("AddressId");
 
                     b.HasIndex("UserId");
 
@@ -558,7 +582,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .HasColumnType("bigint")
                         .UseIdentityColumn();
 
-                    b.Property<long>("AddressId")
+                    b.Property<long?>("AddressId")
                         .HasColumnType("bigint");
 
                     b.Property<long?>("CategoryId")
@@ -592,15 +616,12 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                     b.Property<DateTime>("HeadBirthDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Instagram")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
-
-                    b.Property<bool>("IsPerMonth")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Logo")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MaxAge")
                         .HasColumnType("int");
@@ -615,7 +636,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<long>("ProviderId")
+                    b.Property<long?>("ProviderId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Title")
@@ -742,15 +763,9 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
 
             modelBuilder.Entity("OutOfSchool.Services.Models.Provider", b =>
                 {
-                    b.HasOne("OutOfSchool.Services.Models.Address", "ActualAddress")
+                    b.HasOne("OutOfSchool.Services.Models.Address", "Address")
                         .WithMany()
-                        .HasForeignKey("ActualAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OutOfSchool.Services.Models.Address", "LegalAddress")
-                        .WithMany()
-                        .HasForeignKey("LegalAddressId")
+                        .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -760,9 +775,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ActualAddress");
-
-                    b.Navigation("LegalAddress");
+                    b.Navigation("Address");
 
                     b.Navigation("User");
                 });
@@ -789,9 +802,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                 {
                     b.HasOne("OutOfSchool.Services.Models.Address", "Address")
                         .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AddressId");
 
                     b.HasOne("OutOfSchool.Services.Models.Category", "Category")
                         .WithMany()
@@ -799,9 +810,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
 
                     b.HasOne("OutOfSchool.Services.Models.Provider", "Provider")
                         .WithMany("Workshops")
-                        .HasForeignKey("ProviderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProviderId");
 
                     b.Navigation("Address");
 
