@@ -31,7 +31,6 @@ namespace OutOfSchool.WebApi.Tests.Services
             applicationRepository = new ApplicationRepository(context);
             workshopRepository = new WorkshopRepository(context);
             categoryRepository = new EntityRepository<Category>(context);
-
             logger = new Mock<ILogger>();
             service = new StatisticService(applicationRepository, workshopRepository, categoryRepository, logger.Object);
         }
@@ -52,8 +51,9 @@ namespace OutOfSchool.WebApi.Tests.Services
             var result = await service.GetPopularWorkshops(2).ConfigureAwait(false);
 
             // Assert
-            result.Should().HaveCount(2);
-            result.Should().ContainEquivalentOf(expected);
+            var workshopDtos = result.ToList();
+            workshopDtos.Should().HaveCount(2);
+            workshopDtos.Should().ContainEquivalentOf(expected);
         }
 
         [Test]
@@ -70,11 +70,12 @@ namespace OutOfSchool.WebApi.Tests.Services
             };
 
             // Act
-            var result = await service.GetPopularCategories(2).ConfigureAwait(false);
+            var result = await service.GetPopularCategoriesV2(2).ConfigureAwait(false);
 
             // Assert
-            result.Should().HaveCount(2);
-            result.Should().ContainEquivalentOf(expected);
+            var categoryStatistics = result.ToList();
+            categoryStatistics.Should().HaveCount(2);
+            categoryStatistics.Should().ContainEquivalentOf(expected);
         }
     }
 }

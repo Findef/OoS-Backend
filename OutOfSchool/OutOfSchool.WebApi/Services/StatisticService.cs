@@ -44,37 +44,37 @@ namespace OutOfSchool.WebApi.Services
         // Returns categories with 3 SQL queries, but doesn`t return categories without applications
         public async Task<IEnumerable<CategoryStatistic>> GetPopularCategoriesV2(int limit)
         {
-            logger.Information("Getting popular categories started.");
+            logger.Information("Getting popular categories started");
 
             var workshops = workshopRepository.Get<int>();
             var applications = applicationRepository.Get<int>();
 
             var categoriesWithWorkshops = await workshops.GroupBy(w => w.CategoryId)
-                                                         .Select(g => new
-                                                         {
-                                                             Category = g.Key,
-                                                             WorkshopsCount = g.Count(),
-                                                         })
-                                                         .ToListAsync().ConfigureAwait(false);
+                .Select(g => new
+                {
+                    Category = g.Key,
+                    WorkshopsCount = g.Count(),
+                })
+                .ToListAsync().ConfigureAwait(false);
 
             var categoriesWithApplications = applications.GroupBy(a => a.Workshop.CategoryId)
-                                                         .Select(g => new
-                                                         {
-                                                             Category = g.Key,
-                                                             ApplicationsCount = g.Count(),
-                                                         });
+                .Select(g => new
+                {
+                    Category = g.Key,
+                    ApplicationsCount = g.Count(),
+                });
 
             var popularCategories = await categoriesWithApplications.OrderByDescending(c => c.ApplicationsCount)
-                                                                    .Take(limit)
-                                                                    .ToListAsync().ConfigureAwait(false);
+                .Take(limit)
+                .ToListAsync().ConfigureAwait(false);
 
-            var categoriesWithCounts = popularCategories.Select(c => new
-            {
-                Category = c.Category,
-                ApplicationsCount = c.ApplicationsCount,
-                WorkshopsCount = categoriesWithWorkshops.FirstOrDefault(ct => ct.Category == c.Category)
-                                                        .WorkshopsCount,
-            });
+            var categoriesWithCounts = popularCategories.Select(c =>
+                new {
+                c.Category,
+                c.ApplicationsCount,
+                categoriesWithWorkshops.FirstOrDefault(ct => ct.Category == c.Category)
+                    .WorkshopsCount,
+            }).ToList();
 
             var categoryIds = categoriesWithCounts.Select(c => c.Category);
 
@@ -82,19 +82,18 @@ namespace OutOfSchool.WebApi.Services
 
             var categories = await categoryRepository.Get<int>(where: filter).ToListAsync().ConfigureAwait(false);
 
-            List<CategoryStatistic> statistics = new List<CategoryStatistic>();
-
-            foreach (var category in categoriesWithCounts)
-            {
-                var categoryStatistic = new CategoryStatistic
+            var statistics = categoriesWithCounts.Select(category =>
+                new 
                 {
                     Category = categories.FirstOrDefault(c => c.Id == category.Category).ToModel(),
-                    ApplicationsCount = category.ApplicationsCount,
-                    WorkshopsCount = category.WorkshopsCount,
-                };
-
-                statistics.Add(categoryStatistic);
-            }
+                    category.ApplicationsCount,
+                    category.WorkshopsCount,
+                }).Select(selectResult => new CategoryStatistic
+            {
+                Category = selectResult.Category,
+                ApplicationsCount = selectResult.ApplicationsCount,
+                WorkshopsCount = selectResult.WorkshopsCount,
+            }).ToList();
 
             logger.Information($"All {statistics.Count} records were successfully received");
 
@@ -119,8 +118,8 @@ namespace OutOfSchool.WebApi.Services
             foreach (var category in categoriesWithWorkshops)
             {
                 var applicationsCount = await category.Workshops.Select(w => w.Applications.Count)
-                                                                .ToListAsync()
-                                                                .ConfigureAwait(false);
+                    .ToListAsync()
+                    .ConfigureAwait(false);
 
                 var statistic = new CategoryStatistic
                 {
@@ -133,7 +132,7 @@ namespace OutOfSchool.WebApi.Services
             }
 
             var popularCategories = statistics.OrderByDescending(s => s.ApplicationsCount)
-                                              .Take(limit);
+                .Take(limit);
 
             return popularCategories;
         }
@@ -152,11 +151,11 @@ namespace OutOfSchool.WebApi.Services
             });
 
             var popularWorkshops = workshopsWithApplications.OrderByDescending(w => w.Applications)
-                                                            .Select(w => w.Workshop)
-                                                            .Take(limit);
+                .Select(w => w.Workshop)
+                .Take(limit);
 
             var workshopDtos = await popularWorkshops.Select(w => w.ToModelSimple())
-                                                     .ToListAsync().ConfigureAwait(false);
+                .ToListAsync().ConfigureAwait(false);
 
             logger.Information($"All {workshopDtos.Count} records were successfully received");
 
