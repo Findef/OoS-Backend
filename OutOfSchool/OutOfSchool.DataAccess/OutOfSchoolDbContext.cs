@@ -48,6 +48,8 @@ namespace OutOfSchool.Services
 
         public DbSet<Favorite> Favorites { get; set; }
 
+        public DbSet<BackupOperation> BackupOperations { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

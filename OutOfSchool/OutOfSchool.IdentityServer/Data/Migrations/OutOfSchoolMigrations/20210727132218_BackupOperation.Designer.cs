@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OutOfSchool.Services;
 
 namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
 {
     [DbContext(typeof(OutOfSchoolDbContext))]
-    partial class OutOfSchoolDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210727132218_BackupOperation")]
+    partial class BackupOperation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,8 +207,8 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                     b.Property<long>("ChildId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<long>("ParentId")
                         .HasColumnType("bigint");
@@ -257,7 +259,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("SvidDate")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SvidNum")
                         .HasColumnType("nvarchar(max)");
@@ -286,8 +288,8 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                     b.Property<long>("ChatRoomId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
@@ -360,7 +362,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .UseIdentityColumn();
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -558,7 +560,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("DirectorDateOfBirth")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("EdrpouIpn")
                         .IsRequired()
@@ -635,8 +637,8 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .HasColumnType("bigint")
                         .UseIdentityColumn();
 
-                    b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<long>("EntityId")
                         .HasColumnType("bigint");
@@ -708,7 +710,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .UseIdentityColumn();
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -760,8 +762,8 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .HasColumnType("char(36)")
                         .IsFixedLength(true);
 
-                    b.Property<DateTimeOffset>("CreatingTime")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime>("CreatingTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -778,8 +780,8 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                     b.Property<bool>("IsRegistered")
                         .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset>("LastLogin")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime>("LastLogin")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -896,7 +898,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("HeadDateOfBirth")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Instagram")
                         .HasMaxLength(256)

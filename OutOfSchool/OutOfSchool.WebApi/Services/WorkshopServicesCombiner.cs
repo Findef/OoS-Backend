@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OutOfSchool.ElasticsearchData.Models;
 using OutOfSchool.WebApi.Enums;
@@ -13,12 +14,14 @@ namespace OutOfSchool.WebApi.Services
         private readonly IWorkshopService databaseService;
         private readonly IElasticsearchService<WorkshopES, WorkshopFilterES> elasticsearchService;
         private readonly ILogger logger;
+        private readonly IBackupOperationService backupOperationService;
 
-        public WorkshopServicesCombiner(IWorkshopService workshopService, IElasticsearchService<WorkshopES, WorkshopFilterES> elasticsearchService, ILogger logger)
+        public WorkshopServicesCombiner(IWorkshopService workshopService, IElasticsearchService<WorkshopES, WorkshopFilterES> elasticsearchService, ILogger logger, IBackupOperationService backupOperationService)
         {
             this.databaseService = workshopService;
             this.elasticsearchService = elasticsearchService;
             this.logger = logger;
+            this.backupOperationService = backupOperationService;
         }
 
         /// <inheritdoc/>
@@ -27,6 +30,16 @@ namespace OutOfSchool.WebApi.Services
             var workshop = await databaseService.Create(dto).ConfigureAwait(false);
 
             var esResultIsValid = await elasticsearchService.Index(workshop.ToESModel()).ConfigureAwait(false);
+
+            BackupOperationDto backupOperationDto = new BackupOperationDto()
+            {
+                Operation = OutOfSchool.Services.Enums.Operations.Create,
+                OperationDate = DateTime.UtcNow,
+                TableName = "Workshop",
+                RecordId = 1,
+            };
+
+            var backupOperation = await backupOperationService.Create(backupOperationDto).ConfigureAwait(false);
 
             if (!esResultIsValid)
             {
