@@ -228,7 +228,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
                     b.ToTable("Applications");
                 });
 
-            modelBuilder.Entity("OutOfSchool.Services.Models.BackupOperation", b =>
+            modelBuilder.Entity("OutOfSchool.Services.Models.BackupTracker", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -248,7 +248,7 @@ namespace OutOfSchool.IdentityServer.Data.Migrations.OutOfSchoolMigrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BackupOperations");
+                    b.ToTable("BackupTrackers");
                 });
 
             modelBuilder.Entity("OutOfSchool.Services.Models.BirthCertificate", b =>

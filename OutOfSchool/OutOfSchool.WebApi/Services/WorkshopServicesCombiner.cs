@@ -29,21 +29,22 @@ namespace OutOfSchool.WebApi.Services
         {
             var workshop = await databaseService.Create(dto).ConfigureAwait(false);
 
-            var esResultIsValid = await elasticsearchService.Index(workshop.ToESModel()).ConfigureAwait(false);
+            //var esResultIsValid = await elasticsearchService.Index(workshop.ToESModel()).ConfigureAwait(false);
 
-            BackupTrackerDto backupTrackerDto = new BackupTrackerDto()
-            {
-                Operation = OutOfSchool.Services.Enums.BackupOperation.Create,
-                OperationDate = DateTime.UtcNow,
-                TableName = "Workshop",
-                RecordId = 1,
-            };
-
-            var backupTracker = await backupTrackerService.Create(backupTrackerDto).ConfigureAwait(false);
+            var esResultIsValid = false;
 
             if (!esResultIsValid)
             {
                 logger.Warning($"Error happend while trying to index {nameof(workshop)}:{workshop.Id} in Elasticsearch.");
+
+                BackupTrackerDto backupTrackerDto = new BackupTrackerDto()
+                {
+                    Operation = OutOfSchool.Services.Enums.BackupOperation.Create,
+                    OperationDate = DateTime.UtcNow,
+                    TableName = nameof(workshop),
+                    RecordId = workshop.Id,
+                };
+                var backupTracker = await backupTrackerService.Create(backupTrackerDto).ConfigureAwait(false);
             }
 
             return workshop;
