@@ -322,6 +322,7 @@ namespace OutOfSchool.WebApi.Extensions
                     .ForMember(dest => dest.Direction, opt => opt.Ignore());
                 cfg.CreateMap<AddressDto, Address>();
                 cfg.CreateMap<ProviderDto, Provider>();
+                cfg.CreateMap<ProviderDto, Provider>();
                 cfg.CreateMap<TeacherDTO, Teacher>();
             });
         }
