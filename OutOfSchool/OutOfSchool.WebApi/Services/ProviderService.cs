@@ -59,7 +59,8 @@ namespace OutOfSchool.WebApi.Services
                 throw new ArgumentException(localizer["You can not create more than one account."]);
             }
 
-            Func<Task<Provider>> operation = async () => await providerRepository.Create(dto.ToDomain()).ConfigureAwait(false);
+            Func<Task<Provider>> operation = async () =>
+                await providerRepository.Create(dto.ToDomain()).ConfigureAwait(false);
 
             var newProvider = await providerRepository.RunInTransaction(operation).ConfigureAwait(false);
 
@@ -81,7 +82,8 @@ namespace OutOfSchool.WebApi.Services
 
             var providersDTO = providers.Select(provider => provider.ToModel()).ToList();
 
-            var averageRatings = ratingService.GetAverageRatingForRange(providersDTO.Select(p => p.Id), RatingType.Provider);
+            var averageRatings =
+                ratingService.GetAverageRatingForRange(providersDTO.Select(p => p.Id), RatingType.Provider);
 
             if (averageRatings != null)
             {
@@ -129,7 +131,9 @@ namespace OutOfSchool.WebApi.Services
 
             Expression<Func<Provider, bool>> filter = p => p.UserId == id;
 
-            var providers = (await providerRepository.GetByFilter(filter).ConfigureAwait(false)).ToList();
+            var providers = (await providerRepository.GetByFilter(
+                filter,
+                $"{nameof(Provider.ActualAddress)},{nameof(Provider.LegalAddress)}").ConfigureAwait(false));
 
             if (!providers.Any())
             {
