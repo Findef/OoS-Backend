@@ -117,7 +117,7 @@ namespace OutOfSchool.WebApi
                         .AllowAnyHeader()
                         .AllowCredentials()));
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
 
             services.AddDbContext<OutOfSchoolDbContext>(builder =>
                 builder.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
