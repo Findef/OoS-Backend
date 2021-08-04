@@ -27,7 +27,7 @@ namespace OutOfSchool.WebApi.Extensions
             var user = configuration["elasticsearch:user"];
             var password = configuration["elasticsearch:password"];
 
-            var defaultIndex = "workshop";
+            var defaultIndex = "workshoptestbackup";
 
             var settings = new ConnectionSettings(new Uri(url))
                     .DefaultIndex(defaultIndex)
@@ -46,7 +46,7 @@ namespace OutOfSchool.WebApi.Extensions
         private static void AddDefaultMappings(ConnectionSettings settings)
         {
             settings
-                .DefaultMappingFor<WorkshopES>(m => m.IndexName("workshop"));
+                .DefaultMappingFor<WorkshopES>(m => m.IndexName("workshoptestbackup"));
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace OutOfSchool.WebApi.Extensions
 
             if (resp.ApiCall.HttpStatusCode == 404)
             {
-                client.Indices.Create(indexName, index => index.Map<T>(x => x.AutoMap<T>()));
+                var re = client.Indices.Create(indexName, index => index.Map<T>(x => x.AutoMap<T>()));
             }
         }
     }

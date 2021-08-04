@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OutOfSchool.ElasticsearchData.Models;
 using OutOfSchool.WebApi.Enums;
+using OutOfSchool.Services.Enums;
 using OutOfSchool.WebApi.Extensions;
 using OutOfSchool.WebApi.Models;
 using Serilog;
@@ -37,14 +38,7 @@ namespace OutOfSchool.WebApi.Services
             {
                 logger.Warning($"Error happend while trying to index {nameof(workshop)}:{workshop.Id} in Elasticsearch.");
 
-                BackupTrackerDto backupTrackerDto = new BackupTrackerDto()
-                {
-                    Operation = OutOfSchool.Services.Enums.BackupOperation.Create,
-                    OperationDate = DateTime.UtcNow,
-                    TableName = nameof(workshop),
-                    RecordId = workshop.Id,
-                };
-                var backupTracker = await backupTrackerService.Create(backupTrackerDto).ConfigureAwait(false);
+                AddRecordToBackupTracker(workshop.Id, BackupOperation.Create);
             }
 
             return workshop;
@@ -63,11 +57,15 @@ namespace OutOfSchool.WebApi.Services
         {
             var workshop = await databaseService.Update(dto).ConfigureAwait(false);
 
-            var esResultIsValid = await elasticsearchService.Update(workshop.ToESModel()).ConfigureAwait(false);
+            //var esResultIsValid = await elasticsearchService.Update(workshop.ToESModel()).ConfigureAwait(false);
+
+            var esResultIsValid = false;
 
             if (!esResultIsValid)
             {
                 logger.Warning($"Error happend while trying to update {nameof(workshop)}:{workshop.Id} in Elasticsearch.");
+
+                AddRecordToBackupTracker(workshop.Id, BackupOperation.Update);
             }
 
             return workshop;
@@ -78,11 +76,15 @@ namespace OutOfSchool.WebApi.Services
         {
             await databaseService.Delete(id).ConfigureAwait(false);
 
-            var esResultIsValid = await elasticsearchService.Delete(id).ConfigureAwait(false);
+            //var esResultIsValid = await elasticsearchService.Delete(id).ConfigureAwait(false);
+
+            var esResultIsValid = false;
 
             if (!esResultIsValid)
             {
                 logger.Warning($"Error happend while trying to delete Workshop:{id} in Elasticsearch.");
+
+                AddRecordToBackupTracker(id, BackupOperation.Delete);
             }
         }
 
@@ -149,6 +151,18 @@ namespace OutOfSchool.WebApi.Services
             }
 
             return workshopCards;
+        }
+
+        private async void AddRecordToBackupTracker(long id, BackupOperation operation)
+        {
+            BackupTrackerDto backupTrackerDto = new BackupTrackerDto()
+            {
+                Operation = operation,
+                OperationDate = DateTime.UtcNow,
+                TableName = "workshop",
+                RecordId = id,
+            };
+            await backupTrackerService.Create(backupTrackerDto).ConfigureAwait(false);
         }
     }
 }
