@@ -14,5 +14,7 @@ namespace OutOfSchool.Services.Repository
         /// <param name="id">Class id.</param>
         /// <returns>True if Class exists, otherwise false.</returns>
         bool ClassExists(long id);
+
+        Task<IEnumerable<Workshop>> GetWorkshopsForUpdate();
     }
 }
