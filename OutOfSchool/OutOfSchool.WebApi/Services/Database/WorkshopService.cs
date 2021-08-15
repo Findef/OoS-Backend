@@ -269,7 +269,6 @@ namespace OutOfSchool.WebApi.Services
             return result;
         }
 
-        private Expression<Func<Workshop, bool>> PredicateBuild(WorkshopFilter filter)
         public async Task<IEnumerable<WorkshopDTO>> GetWorkshopsForUpdate()
         {
             var workshops = await workshopRepository.GetWorkshopsForUpdate().ConfigureAwait(false);
@@ -277,7 +276,7 @@ namespace OutOfSchool.WebApi.Services
             return workshops.Select(x => x.ToModel()).ToList();
         }
 
-        private Expression<Func<Workshop, bool>> PredicateBuild(WorkshopFilterDto filter)
+        private Expression<Func<Workshop, bool>> PredicateBuild(WorkshopFilter filter)
         {
             var predicate = PredicateBuilder.True<Workshop>();
 

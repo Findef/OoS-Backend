@@ -23,6 +23,7 @@ namespace OutOfSchool.WebApi.Tests.Services
         private Mock<IWorkshopService> mockDatabaseService;
         private Mock<IElasticsearchService<WorkshopES, WorkshopFilterES>> mockElasticsearchService;
         private Mock<ILogger> mockLogger;
+        private Mock<IBackupTrackerService> mockBackupTrackerService;
 
         private IWorkshopServicesCombiner service;
 
@@ -43,7 +44,7 @@ namespace OutOfSchool.WebApi.Tests.Services
             mockElasticsearchService = new Mock<IElasticsearchService<WorkshopES, WorkshopFilterES>>();
             mockLogger = new Mock<ILogger>();
 
-            service = new WorkshopServicesCombiner(mockDatabaseService.Object, mockElasticsearchService.Object, mockLogger.Object);
+            service = new WorkshopServicesCombiner(mockDatabaseService.Object, mockElasticsearchService.Object, mockLogger.Object, mockBackupTrackerService.Object);
         }
 
         [Test]
