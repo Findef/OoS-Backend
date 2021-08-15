@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OutOfSchool.ElasticsearchData.Models;
-using OutOfSchool.WebApi.Enums;
 using OutOfSchool.Services.Enums;
+using OutOfSchool.WebApi.Enums;
 using OutOfSchool.WebApi.Extensions;
 using OutOfSchool.WebApi.Models;
 using Serilog;
@@ -15,14 +15,14 @@ namespace OutOfSchool.WebApi.Services
         private readonly IWorkshopService databaseService;
         private readonly IElasticsearchService<WorkshopES, WorkshopFilterES> elasticsearchService;
         private readonly ILogger logger;
-        private readonly IBackupTrackerService backupTrackerService;
+        private readonly IElasticsearchSynchronizationService elasticsearchSynchronizationService;
 
-        public WorkshopServicesCombiner(IWorkshopService workshopService, IElasticsearchService<WorkshopES, WorkshopFilterES> elasticsearchService, ILogger logger, IBackupTrackerService backupTrackerService)
+        public WorkshopServicesCombiner(IWorkshopService workshopService, IElasticsearchService<WorkshopES, WorkshopFilterES> elasticsearchService, ILogger logger, IElasticsearchSynchronizationService elasticsearchSynchronizationService)
         {
             this.databaseService = workshopService;
             this.elasticsearchService = elasticsearchService;
             this.logger = logger;
-            this.backupTrackerService = backupTrackerService;
+            this.elasticsearchSynchronizationService = elasticsearchSynchronizationService;
         }
 
         /// <inheritdoc/>
@@ -38,7 +38,7 @@ namespace OutOfSchool.WebApi.Services
             {
                 logger.Warning($"Error happend while trying to index {nameof(workshop)}:{workshop.Id} in Elasticsearch.");
 
-                AddRecordToBackupTracker(workshop.Id, BackupOperation.Create);
+                AddNewRecordToElasticsearchSynchronizationTable(workshop.Id, ElasticsearchSyncOperation.Create);
             }
 
             return workshop;
@@ -65,7 +65,7 @@ namespace OutOfSchool.WebApi.Services
             {
                 logger.Warning($"Error happend while trying to update {nameof(workshop)}:{workshop.Id} in Elasticsearch.");
 
-                AddRecordToBackupTracker(workshop.Id, BackupOperation.Update);
+                AddNewRecordToElasticsearchSynchronizationTable(workshop.Id, ElasticsearchSyncOperation.Update);
             }
 
             return workshop;
@@ -84,7 +84,7 @@ namespace OutOfSchool.WebApi.Services
             {
                 logger.Warning($"Error happend while trying to delete Workshop:{id} in Elasticsearch.");
 
-                AddRecordToBackupTracker(id, BackupOperation.Delete);
+                AddNewRecordToElasticsearchSynchronizationTable(id, ElasticsearchSyncOperation.Delete);
             }
         }
 
@@ -153,16 +153,15 @@ namespace OutOfSchool.WebApi.Services
             return workshopCards;
         }
 
-        private async void AddRecordToBackupTracker(long id, BackupOperation operation)
+        private async void AddNewRecordToElasticsearchSynchronizationTable(long id, ElasticsearchSyncOperation operation)
         {
-            BackupTrackerDto backupTrackerDto = new BackupTrackerDto()
+            ElasticsearchSyncRecordDto backupTrackerDto = new ElasticsearchSyncRecordDto()
             {
                 Operation = operation,
                 OperationDate = DateTime.UtcNow,
-                TableName = "workshop",
                 RecordId = id,
             };
-            await backupTrackerService.Create(backupTrackerDto).ConfigureAwait(false);
+            await elasticsearchSynchronizationService.Create(backupTrackerDto).ConfigureAwait(false);
         }
     }
 }

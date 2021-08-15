@@ -147,8 +147,7 @@ namespace OutOfSchool.WebApi
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IWorkshopService, WorkshopService>();
             services.AddTransient<IWorkshopServicesCombiner, WorkshopServicesCombiner>();
-            services.AddTransient<IBackupTrackerService, BackupTrackerService>();
-
+            
             // entities repositories
             services.AddTransient<IEntityRepository<Address>, EntityRepository<Address>>();
             services.AddTransient<IEntityRepository<Application>, EntityRepository<Application>>();
@@ -162,7 +161,7 @@ namespace OutOfSchool.WebApi
             services.AddTransient<IEntityRepository<SocialGroup>, EntityRepository<SocialGroup>>();
             services.AddTransient<IEntityRepository<Teacher>, EntityRepository<Teacher>>();
             services.AddTransient<IEntityRepository<User>, EntityRepository<User>>();
-            services.AddTransient<IEntityRepository<BackupTracker>, EntityRepository<BackupTracker>>();
+            services.AddTransient<IEntityRepository<ElasticsearchSyncRecord>, EntityRepository<ElasticsearchSyncRecord>>();
 
             services.AddTransient<IApplicationRepository, ApplicationRepository>();
             services.AddTransient<IClassRepository, ClassRepository>();
